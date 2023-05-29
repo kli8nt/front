@@ -23,6 +23,6 @@
     }
 
     .input {
-        @apply focus:outline-none p-3 rounded-md text-sm bg-[#222]/30 backdrop-blur-xl  text-black duration-300 focus:ring-2 focus:ring-white;
+        @apply focus:outline-none p-3  rounded-md text-sm bg-[#222]/30 backdrop-blur-xl  text-white duration-300 focus:ring-2 focus:ring-white;
     }
 }

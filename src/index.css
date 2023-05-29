@@ -1,3 +1,28 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  html {
+    overflow-x: hidden;
+  }
+
+  body {
+    background-color: #000;
+  }
+
+  * {
+    font-family: 'Inter', sans-serif;
+  }
+}
+
+
+@layer components {
+    .button {
+        @apply px-3 py-2 rounded-md font-medium border border-white text-sm hover:bg-white hover:text-black duration-200;
+    }
+
+    .input {
+        @apply focus:outline-none p-3 rounded-md text-sm bg-[#222]/30 backdrop-blur-xl  text-black duration-300 focus:ring-2 focus:ring-white;
+    }
+}

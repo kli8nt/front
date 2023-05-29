@@ -4,9 +4,9 @@ export default function Navbar() {
   return (
     <div className="sticky px-40">
       <div className="py-4 flex items-center space-x-6">
-        <div className="text-white tracking-widest font-light text-xl">
+        <Link to="/" className="text-white tracking-widest font-light text-xl">
           Kli8nt
-        </div>
+        </Link>
 
         <div className="flex-1"></div>
         <Link to="/apps">Applications</Link>

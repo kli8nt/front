@@ -85,7 +85,10 @@ export default function Index() {
           <div className="pb-10 ">
             <h1 className="font-bold text-3xl">Deploy a new application</h1>
           </div>
-          <h1 className="pb-4 text-lg font-medium">Select Repository</h1>
+          <h1 className="pb-4 text-lg font-medium flex items-center justify-between">
+            <span>Select Repository</span>
+            <button className="button text-xs">Refresh</button>
+          </h1>
           <div className="grid gap-4">
             {repository.list.map(repo => (
               <button

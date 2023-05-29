@@ -9,7 +9,7 @@ export default function Index() {
           </a>
         </div>
       </div>
-      <div className="bg-[#111] p-10 rounded-md">
+      <div className="bg-[#111]/40 backdrop-blur-xl p-10 rounded-md">
         <h1 className="font-bold text-2xl">Logs</h1>
         <pre className="py-10">
           lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum

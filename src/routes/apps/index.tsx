@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { useApps } from '~/core/api'
 
 const deployments = [
   {
@@ -22,6 +23,10 @@ const deployments = [
 ]
 
 export default function Index() {
+  const apps = useApps()
+
+  console.log(apps)
+
   return (
     <div className="p-40">
       <div className="pb-10">

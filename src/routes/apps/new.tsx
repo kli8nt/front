@@ -3,8 +3,9 @@ import { useNavigate } from 'react-router-dom'
 import { loginWithGithub, useDeploy, useMyRepos } from '~/core/api'
 
 function getVersion(tech: string | null) {
+  if (tech === 'nginx') return 'latest'
   if (tech === 'python') return '3.10'
-  if (tech === 'nodejs') return '17'
+  if (tech === 'node') return 'latest'
   if (tech === 'deno') return '1.13'
   if (tech === 'java') return '17'
   if (tech === 'php') return '8.0'
@@ -26,7 +27,8 @@ const formOptions = [
     name: 'technology',
     options: [
       { label: 'Python', value: 'python' },
-      { label: 'NodeJS', value: 'nodejs' },
+      { label: 'Nginx', value: 'nginx' },
+      { label: 'NodeJS', value: 'node' },
       { label: 'Deno', value: 'deno' },
       { label: 'Java', value: 'java' },
       { label: 'PHP', value: 'php' },
@@ -89,6 +91,7 @@ const formOptions = [
 export default function Index() {
   const repository = useRepository()
   const { data, isLoading } = useMyRepos()
+  const [appname, setAppname] = useState('')
   const { mutate, isSuccess, isError } = useDeploy()
   const push = useNavigate()
   const [search, setSearch] = useState('')
@@ -96,7 +99,7 @@ export default function Index() {
   useEffect(() => {
     if (isSuccess) {
       alert('Deployed successfully')
-      push('/apps')
+      push('/apps/dep/' + appname)
     }
     if (isError) {
       alert('Something went wrong')
@@ -130,7 +133,7 @@ export default function Index() {
     const formData = new FormData(e.currentTarget)
     formData.set('version', getVersion(repository.selected || ''))
     formData.set('repository_url', repository.selected || '')
-
+    setAppname(formData.get('application_name') as string)
     mutate(formData)
   }
 
@@ -220,7 +223,6 @@ export default function Index() {
                     className="input"
                     name={opt.name}
                     placeholder={opt.placeholder}
-                    required
                   />
                 ) : null}
               </label>

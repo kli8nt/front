@@ -57,11 +57,30 @@ const deploy = (body: FormData) =>
     },
   })
 
-export function useDeploy() {
-  const queryClient = useQueryClient()
-  return useMutation((body: FormData) => deploy(body), {
-    onSuccess: () => {
-      queryClient.invalidateQueries('repos')
-    },
-  })
-}
+
+  const getApps = () => api().get('/apps')
+
+  export function useDeploy() {
+    const queryClient = useQueryClient()
+    return useMutation((body: FormData) => deploy(body), {
+      onSuccess: () => {
+        queryClient.invalidateQueries('repos')
+      },
+    })
+  }
+
+  export function useApps() {
+    const queryClient = useQueryClient()
+    return useQuery(
+      'apps',
+      async () => {
+        const { data } = await getApps()
+        return data
+      },
+      {
+        onSuccess: data => {
+          queryClient.setQueryData('apps', data)
+        },
+      }
+    )
+  }

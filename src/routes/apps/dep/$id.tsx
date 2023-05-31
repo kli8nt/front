@@ -1,4 +1,8 @@
+import { useLogs } from '~/core/use-socket'
+
 export default function Index() {
+  const logs = useLogs()
+
   return (
     <div className="p-40">
       <div className="pb-10 flex items-center space-x-10">
@@ -12,8 +16,11 @@ export default function Index() {
       <div className="bg-[#111]/40 backdrop-blur-xl p-10 rounded-md">
         <h1 className="font-bold text-2xl">Logs</h1>
         <pre className="py-10">
-          lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum
-          dolor sit amet lorem ipsum dolor sit amet
+          {logs.map((log, idx) => (
+            <div key={idx}>
+              {log} <br />
+            </div>
+          ))}
         </pre>
       </div>
     </div>
@@ -22,7 +29,7 @@ export default function Index() {
 
 const deployment = {
   id: 1,
-  name: 'My cool application',
-  technology: 'Python',
+  name: 'Nginx-TS Example',
+  technology: 'nginx',
   status: 'running',
 }

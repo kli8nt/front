@@ -4,16 +4,17 @@ import Loading from '~/core/Loading'
 import Providers from '~/core/Providers'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import Navbar from './core/Navbar'
+import { useSetToken } from './core/api'
 
 function App() {
   const routes = useRoutes()
   return (
-    <div>
-      <div className="text-white bg-[url('/pattern.svg')] bg-no-repeat bg-center">
-        <div className="h-screen backdrop-blur-xl">
-          <Providers>
-            <Suspense fallback={<Loading />}>
-              <BrowserRouter>
+    <Suspense fallback={<Loading />}>
+      <BrowserRouter>
+        <Providers>
+          <Wrapper>
+            <div className="text-white bg-[url('/pattern.svg')] bg-no-repeat bg-center">
+              <div className="h-screen backdrop-blur-xl">
                 <Navbar />
                 <Routes>
                   {routes.map(route => (
@@ -25,13 +26,18 @@ function App() {
                   ))}
                   <Route path="*" element={<h1>Not found</h1>} />
                 </Routes>
-              </BrowserRouter>
-            </Suspense>
-          </Providers>
-        </div>
-      </div>
-    </div>
+              </div>
+            </div>
+          </Wrapper>
+        </Providers>
+      </BrowserRouter>
+    </Suspense>
   )
+}
+
+function Wrapper({ children }: { children: React.ReactNode }) {
+  useSetToken()
+  return <>{children}</>
 }
 
 export default App

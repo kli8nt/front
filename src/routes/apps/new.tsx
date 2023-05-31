@@ -1,9 +1,16 @@
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { loginWithGithub, useDeploy, useMyRepos } from '~/core/api'
 
-function getVersion(tech: string) {
+function getVersion(tech: string | null) {
   if (tech === 'python') return '3.10'
   if (tech === 'nodejs') return '17'
   if (tech === 'deno') return '1.13'
+  if (tech === 'java') return '17'
+  if (tech === 'php') return '8.0'
+  if (tech === 'ruby') return '3.0'
+  if (tech === 'go') return '1.17'
+  return 'latest'
 }
 
 const formOptions = [
@@ -21,6 +28,10 @@ const formOptions = [
       { label: 'Python', value: 'python' },
       { label: 'NodeJS', value: 'nodejs' },
       { label: 'Deno', value: 'deno' },
+      { label: 'Java', value: 'java' },
+      { label: 'PHP', value: 'php' },
+      { label: 'Ruby', value: 'ruby' },
+      { label: 'Go', value: 'go' },
     ],
   },
   {
@@ -77,6 +88,51 @@ const formOptions = [
 
 export default function Index() {
   const repository = useRepository()
+  const { data, isLoading } = useMyRepos()
+  const { mutate, isSuccess, isError } = useDeploy()
+  const push = useNavigate()
+  const [search, setSearch] = useState('')
+
+  useEffect(() => {
+    if (isSuccess) {
+      alert('Deployed successfully')
+      push('/apps')
+    }
+    if (isError) {
+      alert('Something went wrong')
+    }
+  }, [isSuccess, isError])
+
+  const repositories = useMemo(() => {
+    if (!data) return []
+
+    if (!search)
+      return data.repos.sort((a: any, b: any) => {
+        return new Date(b.CreatedAt).getTime() - new Date(a.CreatedAt).getTime()
+      })
+
+    const filtered = data.repos.filter((repo: any) => {
+      return repo.name.toLowerCase().includes(search.toLowerCase())
+    })
+
+    return filtered.sort((a: any, b: any) => {
+      return new Date(b.CreatedAt).getTime() - new Date(a.CreatedAt).getTime()
+    })
+  }, [data, search])
+
+  const handleSubmit: React.FormEventHandler<HTMLFormElement> = e => {
+    e.preventDefault()
+
+    if (!repository.selected) {
+      alert('Select a repository first')
+      return
+    }
+    const formData = new FormData(e.currentTarget)
+    formData.set('version', getVersion(repository.selected || ''))
+    formData.set('repository_url', repository.selected || '')
+
+    mutate(formData)
+  }
 
   return (
     <div className="p-40">
@@ -89,23 +145,46 @@ export default function Index() {
             <span>Select Repository</span>
             <button className="button text-xs">Refresh</button>
           </h1>
-          <div className="grid gap-4">
-            {repository.list.map(repo => (
-              <button
-                key={repo}
-                onClick={() => repository.select(repo)}
-                className={`button ${
-                  repository.selected !== repo ? '' : 'text-black bg-white'
-                }`}
-              >
-                {repo}
-              </button>
-            ))}
+          <div className="h-96 overflow-y-scroll p-4">
+            <div className="grid gap-4">
+              <div className="py-4 flex items-center space-x-4">
+                <span>Search:</span>
+                <input
+                  type="text"
+                  className="flex-1 input border border-white"
+                  onChange={e => setSearch(e.target.value)}
+                  value={search}
+                  required
+                />
+              </div>
+              {isLoading ? (
+                <div className="animate-pulse">Loading</div>
+              ) : (
+                repositories.map(
+                  (repo: { name: string; repo_url: string }, idx: any) => (
+                    <button
+                      key={idx}
+                      onClick={() => repository.select(repo.repo_url)}
+                      className={`button ${
+                        repository.selected !== repo.repo_url
+                          ? ''
+                          : 'text-black bg-white'
+                      }`}
+                    >
+                      {repo.name}
+                    </button>
+                  )
+                )
+              )}
+            </div>
           </div>
         </div>
 
         <div className="col-span-2">
-          <form action="" className="max-w-3xl grid gap-4 grid-cols-2">
+          <form
+            onSubmit={handleSubmit}
+            className="max-w-3xl grid gap-4 grid-cols-2"
+          >
             {formOptions.map((opt, idx) => (
               <label
                 className={`grid gap-2 ${
@@ -119,7 +198,6 @@ export default function Index() {
                     className="input"
                     name={opt.name}
                     placeholder={opt.placeholder}
-                    required
                   />
                 ) : null}
                 {opt.options ? (
